@@ -1,7 +1,10 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
+from django.http import JsonResponse
 from .models import Lesson
+import subprocess
 
 @api_view(['GET', 'POST'])
 def lesson_list(request):
@@ -16,17 +19,26 @@ def lesson_list(request):
         lesson = Lesson.objects.create(title=data.get('title'), content=data.get('content'))
         return Response({'id': lesson.id, 'title': lesson.title})
 
-@api_view(['GET', 'POST'])
-def run_python_code(request, lesson_id):
-    lesson = get_object_or_404(Lesson, pk=lesson_id)
-    
+@api_view(['GET'])
+def code_python(request):
+    if request.method == 'GET':
+        return render(request, 'code-q.html')
+
+@csrf_exempt
+def execute_python_code(request):
     if request.method == 'POST':
-        # Выполнение Python-кода
-        code_to_execute = request.data.get('code')
-        # Здесь нужно использовать библиотеку для безопасного выполнения кода, например, `exec()` или `ast.literal_eval()`
-        # Важно обеспечить безопасность выполнения кода!
+        python_code = request.POST.get('python_code', '')
+
+        # Выполнение кода Python
         try:
-            result = exec(code_to_execute)
-            return Response({'result': result})
+            process = subprocess.Popen(['python', '-c', python_code], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            output, error = process.communicate()
+            if error:
+                return JsonResponse({'output': '', 'error': error})
+            else:
+                return JsonResponse({'output': output, 'error': ''})
         except Exception as e:
-            return Response({'error': str(e)})
+            return JsonResponse({'output': '', 'error': str(e)})
+
+    # Возврат ошибки если метод не POST
+    return JsonResponse({'output': '', 'error': 'Метод не разрешен'})

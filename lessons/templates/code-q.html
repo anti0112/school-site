@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CodeMirror Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/theme/monokai.min.css"> <!-- Добавленная строка для темы Monokai -->
+</head>
+<body>
+  <section class="quiz quiz_answered quiz_type_coding quiz_blocking theory-viewer__block theory-viewer__block_type_quiz-coding theory-viewer__block_wide quiz" style="--accent-color: var(--profession-color, $pureBlue);">
+      <div class="quiz__header">
+          <span class="quiz__title"><span>Код</span></span>
+          <span class="quiz__language">PYTHON</span>
+      </div>
+      <div class="quiz__code-editor-wrapper">
+          <textarea id="codeEditor"></textarea>
+          <button onclick="runPythonCode()">Выполнить код</button>
+          <div id="output"></div>
+      </div>
+  </section>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/python/python.min.js"></script>
+  <script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+      lineNumbers: true,
+      mode: "python",
+      theme: "monokai" // Установка темы Monokai
+    });
+
+    function runPythonCode() {
+      var pythonCode = editor.getValue();
+
+      fetch('execute_python_code/', {
+        method: 'POST',
+        body: new URLSearchParams({ python_code: pythonCode }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('output').innerText = data.output;
+      })
+      .catch(error => {
+        console.error('Ошибка:', error);
+      });
+    }
+  </script>
+</body>
+</html>
