@@ -30,7 +30,7 @@
     function runPythonCode() {
       var pythonCode = editor.getValue();
 
-      fetch('execute_python_code/', {
+      fetch('', {
         method: 'POST',
         body: new URLSearchParams({ python_code: pythonCode }),
         headers: {

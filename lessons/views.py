@@ -19,13 +19,14 @@ def lesson_list(request):
         lesson = Lesson.objects.create(title=data.get('title'), content=data.get('content'))
         return Response({'id': lesson.id, 'title': lesson.title})
 
-@api_view(['GET'])
-def code_python(request):
-    if request.method == 'GET':
-        return render(request, 'code-q.html')
+
+    
 
 @csrf_exempt
+@api_view(['GET', 'POST'])
 def execute_python_code(request):
+    if request.method == 'GET':
+        return render(request, 'code-q.html')
     if request.method == 'POST':
         python_code = request.POST.get('python_code', '')
 
