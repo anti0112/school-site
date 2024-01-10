@@ -6,3 +6,4 @@ pytz==2023.3.post1
 sqlparse==0.4.4
 tzdata==2023.4
 psycopg2-binary==2.9.2
+djoser==2.2.2
