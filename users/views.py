@@ -9,6 +9,8 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+from users.forms import CustomUserCreationForm
+
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class LoginView(View):
     template_name = 'auth.html'
@@ -34,19 +36,20 @@ class LoginView(View):
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class RegisterView(View):
-    template_name = 'auth.html'
+    template_name = 'register.html'
 
     def get(self, request, *args, **kwargs):
         form = UserCreationForm()
         return render(request, self.template_name, {'form': form})
 
     def post(self, request, *args, **kwargs):
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Регистрация прошла успешно!')
-            return redirect('login/')  # Укажите свой URL для перенаправления после успешной регистрации
+            form.save()
+            return redirect('login')
+        else:
+            form = CustomUserCreationForm()
+
         return render(request, self.template_name, {'form': form})
 
 
