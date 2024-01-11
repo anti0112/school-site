@@ -5,4 +5,4 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     class Meta:
         model = Student 
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'email', 'password']

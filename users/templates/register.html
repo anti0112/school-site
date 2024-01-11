@@ -36,32 +36,54 @@
             <div class="line"></div>
         </div>
 
-        <form method='post'>
+        <form method='post' id='registrationForm'>
             {% csrf_token %}
             <label for="{{ form.username.id_for_label }}">Username:</label>
             <div class='custome-input'>
             {{ form.username }}
             </div>
 
-            <label for="{{ form.password1.id_for_label }}">Password:</label>
+            <label for="{{ form.password.id_for_label }}">Password:</label>
             <div class='custome-input'>
-            {{ form.password1 }}
+            {{ form.password }}
             </div>
             
             <label for="{{ form.email.id_for_label }}">Email:</label>
             <div class='custome-input'>
             {{ form.email }}
             </div>
-
-            
-
-            <button type="submit">Register</button>
+            <button type="submit" class="login">Register</button>
             <div class="links">
                 <a href="">Forgot Password?</a>
                 <a href="">Already have an account?</a>
             </div>
         </form>
-
+        <script>
+            document.getElementById('registrationForm').addEventListener('submit', function (event) {
+                event.preventDefault();  // Отменяем стандартное поведение формы
+                var formData = new FormData(this);
+        
+                // Отправляем запрос на создание пользователя
+                fetch('http://localhost:8000/api/auth/users/', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    console.log('Ответ сервера:', response);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Данные от сервера:', data);
+                    if (data.id) {
+                        // Перенаправляем пользователя на страницу авторизации после успешной регистрации
+                        window.location.href = 'http://localhost:8000/api/login/';
+                    } else {
+                        console.error('Ошибка валидации формы:', data.message || 'Неопределенная ошибка');
+                    }
+                })
+                .catch(error => console.error('Произошла ошибка:', error));
+            });
+        </script>
     </div>
 
 </body>

@@ -39,16 +39,15 @@ class RegisterView(View):
     template_name = 'register.html'
 
     def get(self, request, *args, **kwargs):
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
         return render(request, self.template_name, {'form': form})
 
     def post(self, request, *args, **kwargs):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
-        else:
-            form = CustomUserCreationForm()
+            return redirect('http://localhost:8000/api/login/')
+
 
         return render(request, self.template_name, {'form': form})
 
